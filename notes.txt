@@ -22,4 +22,22 @@ ndjson-map -r d3 '(d.properties.fill = d3.scaleSequential(d3.interpolateViridis)
 
 geo2svg -n --stroke none -p 1 -w 960 -h 960 < hw-albers-color.ndjson > hw-albers-color.svg
 
-geo2topo -n tracts=ca-albers-density.ndjson > ca-tracts-topo.json
+geo2topo -n tracts=hw-albers-density.ndjson > hw-tracts-topo.json
+
+toposimplify -p 1 -f < hw-tracts-topo.json > hw-simple-topo.json
+
+topoquantize 1e5 < hw-simple-topo.json > hw-quantized-topo.json
+
+topomerge -k 'd.id.slice(0, 3)' counties=tracts < hw-quantized-topo.json > hw-merge-topo.json
+
+topomerge --mesh -f 'a !== b' counties=counties < hw-merge-topo.json > hw-topo.json
+
+topo2geo tracts=- < hw-topo.json | ndjson-map -r d3 'z = d3.scaleSequential(d3.interpolateViridis).domain([0, 4000]), d.features.forEach(f => f.properties.fill = z(f.properties.density)), d' | ndjson-split 'd.features' | geo2svg -n --stroke none -p 1 -w 960 -h 960 > hw-tracts-color.svg
+
+topo2geo tracts=- < hw-topo.json | ndjson-map -r d3 'z = d3.scaleSequential(d3.interpolateViridis).domain([0, 100]), d.features.forEach(f => f.properties.fill = z(Math.sqrt(f.properties.density))), d' | ndjson-split 'd.features' | geo2svg -n --stroke none -p 1 -w 960 -h 960 > hw-tracts-sqrt.svg
+
+topo2geo tracts=- < hw-topo.json | ndjson-map -r d3 'z = d3.scaleLog().domain(d3.extent(d.features.filter(f => f.properties.density), f => f.properties.density)).interpolate(() => d3.interpolateViridis), d.features.forEach(f => f.properties.fill = z(f.properties.density)), d' | ndjson-split 'd.features' | geo2svg -n --stroke none -p 1 -w 960 -h 960 > hw-tracts-log.svg
+
+topo2geo tracts=- < hw-topo.json | ndjson-map -r d3 'z = d3.scaleQuantile().domain(d.features.map(f => f.properties.density)).range(d3.quantize(d3.interpolateViridis, 256)), d.features.forEach(f => f.properties.fill = z(f.properties.density)), d' | ndjson-split 'd.features' | geo2svg -n --stroke none -p 1 -w 960 -h 960 > hw-tracts-quantile.svg
+
+topo2geo tracts=- < hw-topo.json | ndjson-map -r d3 -r d3=d3-scale-chromatic 'z = d3.scaleThreshold().domain([1, 10, 50, 200, 500, 1000, 2000, 4000]).range(d3.schemeOrRd[9]), d.features.forEach(f => f.properties.fill = z(f.properties.density)), d' | ndjson-split 'd.features' | geo2svg -n --stroke none -p 1 -w 960 -h 960 > hw-tracts-threshold.svg
