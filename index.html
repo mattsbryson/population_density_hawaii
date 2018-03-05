@@ -120,11 +120,23 @@ function changeColor(){
     .attr("width", function(d) { return x(d[1]) - x(d[0]); })
     .attr("fill", function(d) { return color(d[0]); });
 	
-	svg.selectAll("g")
-    .selectAll("path")
-    //.enter().append("path")
-      .attr("fill", function(d) { return color(d.properties.density); })
-      .attr("d", path);
+	d3.json("hw-topo.json", function(error, topology) {
+  		if (error) throw error;
+
+  	svg.append("g")
+		.selectAll("path")
+		.data(topojson.feature(topology, topology.objects.tracts).features)
+		.enter().append("path")
+		  .attr("fill", function(d) { return color(d.properties.density); })
+		  .attr("d", path);
+
+	  svg.append("path")
+		  .datum(topojson.feature(topology, topology.objects.counties))
+		  .attr("fill", "none")
+		  .attr("stroke", "#000")
+		  .attr("stroke-opacity", 0.3)
+		  .attr("d", path);
+		});
 }
 
 </script>
