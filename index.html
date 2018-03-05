@@ -120,7 +120,7 @@ function changeColor(){
     .attr("width", function(d) { return x(d[1]) - x(d[0]); })
     .attr("fill", function(d) { return color(d[0]); });
 	
-	svg.select("g")
+	svg.append("g")
     .selectAll("path")
     .enter().append("path")
       .attr("fill", function(d) { return color(d.properties.density); })
