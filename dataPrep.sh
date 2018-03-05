@@ -1,5 +1,6 @@
-PROJECTION='d3.geoTransverseMercator().rotate([158,-21])'
-
+#thanks to this for the right projection. https://bl.ocks.org/mbostock/5629120 - albers
+PROJECTION='d3.geoAlbers().parallels([8, 18]).rotate([157, 0])'
+#.rotate([158,-21])
 # The state FIPS code.
 STATE=15
 
