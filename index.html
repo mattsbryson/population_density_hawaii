@@ -1,4 +1,5 @@
-<!-- Used as source:   https://bl.ocks.org/mbostock/5562380 -->                 
+<!-- Used as source:   https://bl.ocks.org/mbostock/5562380 
+Collaborated on some concepts with Austen Barker-->                 
 <!DOCTYPE html>
 <html>
 	<head></head>
@@ -85,12 +86,25 @@ d3.json("hw-topo.json", function(error, topology) {
       .attr("d", path);
 });
 	
+	
+var cColor = 0; 	
 function changeColor(){
 	//console.log(d = color.invertExtent(1));
-	color = d3.scaleThreshold()
-    .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
-	//d3.schemeGnBu[k]
-    .range(d3.schemeGnBu[9]);
+	if(cColor == 0){
+		color = d3.scaleThreshold()
+		.domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+		//d3.schemeGnBu[k]
+    	.range(d3.schemeGnBu[9]);
+		cColor = 1;
+	}
+	else{
+		cColor = 0;
+		color = d3.scaleThreshold()
+    	.domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+		//d3.schemeGnBu[k]
+    	.range(d3.schemeOrRd[9]);
+	}
+	
 	g.append("rect")
 	.data(color.range().map(function(d) {
       d = color.invertExtent(d);
@@ -106,7 +120,7 @@ function changeColor(){
     .attr("width", function(d) { return x(d[1]) - x(d[0]); })
     .attr("fill", function(d) { return color(d[0]); });
 	
-	svg.append("g")
+	svg.select("g")
     .selectAll("path")
     .enter().append("path")
       .attr("fill", function(d) { return color(d.properties.density); })
