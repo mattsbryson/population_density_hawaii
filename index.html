@@ -122,7 +122,7 @@ function changeColor(){
 	
 	svg.selectAll("g")
     .selectAll("path")
-    .enter().append("path")
+    //.enter().append("path")
       .attr("fill", function(d) { return color(d.properties.density); })
       .attr("d", path);
 }
