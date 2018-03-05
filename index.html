@@ -5,10 +5,16 @@ Collaborated on some concepts with Austen Barker-->
 	<head></head>
 	<body>
 		<div id="option">
-    	<input name="updateButton" 
+    	<input name="colorButton" 
            type="button" 
            value="Change Color Scheme" 
            onclick="changeColor()" />
+		</div>
+		<div id="option">
+    	<input name="Button" 
+           type="button" 
+           value="Toggle Census Tract Boundary" 
+           onclick="toggleCensus()" />
 		</div>
 	</body>
 </html>
@@ -120,7 +126,7 @@ function changeColor(){
     .attr("width", function(d) { return x(d[1]) - x(d[0]); })
     .attr("fill", function(d) { return color(d[0]); });
 	
-	d3.json("hw-topo.json", function(error, topology) {
+	d3.json("topo.json", function(error, topology) {
   		if (error) throw error;
 
   	svg.append("g")
@@ -137,6 +143,28 @@ function changeColor(){
 		  .attr("stroke-opacity", 0.3)
 		  .attr("d", path);
 		});
+}
+	
+	
+function toggleCensus()
+{
+	d3.json("topo.json", function(error, topology) {
+	  if (error) throw error;
+
+	  svg.append("g")
+		.selectAll("path")
+		.data(topojson.feature(topology, topology.objects.tracts).features)
+		.enter().append("path")
+		  .attr("fill", function(d) { return color(d.properties.density); })
+		  .attr("d", path);
+
+	  svg.append("path")
+		  .datum(topojson.feature(topology, topology.objects.counties))
+		  .attr("fill", "none")
+		  .attr("stroke", "#000")
+		  .attr("stroke-opacity", 0.3)
+		  .attr("d", path);
+	});
 }
 
 </script>
