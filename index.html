@@ -134,7 +134,8 @@ function changeColor(){
 		.data(topojson.feature(topology, topology.objects.tracts).features)
 		.enter().append("path")
 		  .attr("fill", function(d) { return color(d.properties.density); })
-		  .attr("d", path);
+		  .attr("d", path)
+			.attr("stroke", black);
 
 	  svg.append("path")
 		  .datum(topojson.feature(topology, topology.objects.counties))
