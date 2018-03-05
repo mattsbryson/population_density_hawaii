@@ -68,7 +68,7 @@ g.call(d3.axisBottom(x)
   .select(".domain")
     .remove();
 
-d3.json("hw-topo.json", function(error, topology) {
+d3.json("topo.json", function(error, topology) {
   if (error) throw error;
 
   svg.append("g")
