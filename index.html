@@ -1,4 +1,16 @@
+<!-- Used as source:   https://bl.ocks.org/mbostock/5562380 -->                 
 <!DOCTYPE html>
+<html>
+	<head></head>
+	<body>
+		<div id="option">
+    	<input name="updateButton" 
+           type="button" 
+           value="Change Color Scheme" 
+           onclick="changeColor()" />
+		</div>
+	</body>
+</html>
 <svg width="960" height="1100"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
@@ -13,7 +25,9 @@ var path = d3.geoPath();
 
 var color = d3.scaleThreshold()
     .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+	//d3.schemeGnBu[k]
     .range(d3.schemeOrRd[9]);
+	//.on('click', function(d){ /*do stuff*/  });
 
 var x = d3.scaleSqrt()
     .domain([0, 4500])
@@ -28,6 +42,8 @@ g.selectAll("rect")
       d = color.invertExtent(d);
       if (d[0] == null) d[0] = x.domain()[0];
       if (d[1] == null) d[1] = x.domain()[1];
+		console.log(d[0]);
+		console.log(color(d[0]));
       return d;
     }))
   .enter().append("rect")
@@ -68,5 +84,26 @@ d3.json("hw-topo.json", function(error, topology) {
       .attr("stroke-opacity", 0.3)
       .attr("d", path);
 });
+	
+function changeColor(){
+	color = d3.scaleThreshold()
+    .domain([1, 10, 50, 200, 500, 1000, 2000, 4000])
+	//d3.schemeGnBu[k]
+    .range(d3.schemeGnBu[9]);
+	g.append("rect")
+	.data(color.range().map(function(d) {
+      d = color.invertExtent(d);
+      if (d[0] == null) d[0] = x.domain()[0];
+      if (d[1] == null) d[1] = x.domain()[1];
+		console.log(d[0]);
+		console.log(color(d[0]));
+      return d;
+    }))
+	.enter().selectAll("rect")
+    .attr("height", 8)
+    .attr("x", function(d) { return x(d[0]); })
+    .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+    .attr("fill", function(d) { return color(d[0]); });
+}
 
 </script>
