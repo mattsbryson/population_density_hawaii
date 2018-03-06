@@ -1,5 +1,6 @@
 #thanks to this for the right projection. https://bl.ocks.org/mbostock/5629120 - albers
 PROJECTION='d3.geoAlbers().parallels([8, 18]).rotate([157, 0])'
+#PROJECTION='d3.geoAlbers().parallels([12, 16]).rotate([157, 0])'
 #.rotate([158,-21])
 # The state FIPS code.
 STATE=15
@@ -8,8 +9,8 @@ STATE=15
 YEAR=2014
 
 # The display size.
-WIDTH=960
-HEIGHT=1100
+WIDTH=660
+HEIGHT=600
 
 # Download the census tract boundaries.
 # Extract the shapefile (.shp) and dBASE (.dbf).
@@ -39,7 +40,9 @@ geo2topo -n \
       | ndjson-map '{id: d[2] + d[3], B01003: +d[0]}') \
     | ndjson-map 'd[0].properties = {density: Math.floor(d[1].B01003 / d[0].properties.ALAND * 2589975.2356)}, d[0]') \
   | toposimplify -p 1 -f \
+  | topomerge -k 'd.id.slice(0, 1)' states=tracts \
   | topomerge -k 'd.id.slice(0, 3)' counties=tracts \
   | topomerge --mesh -f 'a !== b' counties=counties \
+  | topomerge --mesh -f 'a == b' states=states \
   | topoquantize 1e5 \
   > topo.json

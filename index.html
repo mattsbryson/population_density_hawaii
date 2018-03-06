@@ -2,8 +2,11 @@
 Collaborated on some concepts with Austen Barker-->                 
 <!DOCTYPE html>
 <html>
-	<head></head>
+	<head>
+		<title>Hawaii Population Density, 2014</title>
+	</head>
 	<body>
+		<svg width="660" height="600"></svg>
 		<div id="option">
     	<input name="colorButton" 
            type="button" 
@@ -16,9 +19,14 @@ Collaborated on some concepts with Austen Barker-->
            value="Toggle Census Tract Boundary" 
            onclick="toggleCensus()" />
 		</div>
+		<div id="option">
+    	<input name="Button" 
+           type="button" 
+           value="Toggle State Border" 
+           onclick="toggleState()" />
+		</div>
 	</body>
 </html>
-<svg width="960" height="1100"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/topojson.v2.min.js"></script>
@@ -38,7 +46,7 @@ var color = d3.scaleThreshold()
 
 var x = d3.scaleSqrt()
     .domain([0, 4500])
-    .rangeRound([440, 950]);
+    .rangeRound([0, 510]);
 
 var g = svg.append("g")
     .attr("class", "key")
@@ -134,38 +142,63 @@ function changeColor(){
 		.data(topojson.feature(topology, topology.objects.tracts).features)
 		.enter().append("path")
 		  .attr("fill", function(d) { return color(d.properties.density); })
-		  .attr("d", path)
-			.attr("stroke", black);
+		  .attr("d", path);
+			//.attr("stroke", black);
 
 	  svg.append("path")
 		  .datum(topojson.feature(topology, topology.objects.counties))
 		  .attr("fill", "none")
-		  .attr("stroke", "#000")
+		  //.attr("stroke", "#000")
+		.attr("stroke", black)
 		  .attr("stroke-opacity", 0.3)
 		  .attr("d", path);
 		});
 }
 	
-	
+var cCensus = 0;	
 function toggleCensus()
 {
-	d3.json("topo.json", function(error, topology) {
-	  if (error) throw error;
-
-	  svg.append("g")
-		.selectAll("path")
-		.data(topojson.feature(topology, topology.objects.tracts).features)
-		.enter().append("path")
-		  .attr("fill", function(d) { return color(d.properties.density); })
-		  .attr("d", path);
-
-	  svg.append("path")
-		  .datum(topojson.feature(topology, topology.objects.counties))
-		  .attr("fill", "none")
-		  .attr("stroke", "#000")
-		  .attr("stroke-opacity", 0.3)
-		  .attr("d", path);
-	});
+	if(cCensus == 0){
+		d3.json("topo.json", function(error, topology) {
+  			if (error) throw error;
+			svg.append("path")
+			.datum(topojson.feature(topology, topology.objects.tracts))
+			.attr("id", "census")
+			.attr("fill", "none")
+			.attr("stroke", "#000")
+			.attr("stroke-opacity", 0.3)
+			.attr("d", path);
+			cCensus = 1;
+		});
+	}
+	else{
+		svg.selectAll("#census")
+		.remove();
+		cCensus = 0;
+	}
+}
+	
+var cState = 0;	
+function toggleState()
+{
+	if(cState == 0){
+		d3.json("topo.json", function(error, topology) {
+  			if (error) throw error;
+			svg.append("path")
+			.datum(topojson.feature(topology, topology.objects.states))
+			.attr("id", "state")
+			.attr("fill", "none")
+			.attr("stroke", "#000")
+			.attr("stroke-opacity", 0.3)
+			.attr("d", path);
+			cState = 1;
+		});
+	}
+	else{
+		svg.selectAll("#state")
+		.remove();
+		cState = 0;
+	}
 }
 
 </script>
